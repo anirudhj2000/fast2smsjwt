@@ -1,8 +1,13 @@
 const config = require("../config/auth.config");
-const fetch = require("node-fetch");
 const { PrismaClient } = require("@prisma/client");
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
+let fetch = import("node-fetch");
+
+// async function loadApp() {
+//   const fetch = import("node-fetch");
+// }
+// loadApp();
 
 const prisma = new PrismaClient();
 
