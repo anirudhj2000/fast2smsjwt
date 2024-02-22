@@ -29,7 +29,6 @@ exports.signup = (req, res) => {
 
   this.sendOtp(req.body.phoneNumber)
     .then((phoneData) => {
-      console.log("abcd", phoneData);
       prisma.user
         .create({
           data: obj,
@@ -145,11 +144,12 @@ exports.verifyOtp = (req, res) => {
               expiresIn: 400, // 24 hours
             });
 
-            res.status(200).header("Authorization", `Bearer ${token}`).send({
-              id: user.id,
-              name: user.name,
-              phoneNumber: user.phoneNumber,
-            });
+            let obj = { ...user };
+
+            res
+              .status(200)
+              .header("Authorization", `Bearer ${token}`)
+              .send(user);
           } else {
             res.status(401).send({ message: "Incorrect OTP" });
           }
