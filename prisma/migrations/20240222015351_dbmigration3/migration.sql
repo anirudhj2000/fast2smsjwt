@@ -52,8 +52,34 @@ CREATE TABLE "Order" (
     CONSTRAINT "Order_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Otp" (
+    "id" TEXT NOT NULL,
+    "otp" TEXT NOT NULL,
+    "phoneNumber" TEXT NOT NULL,
+    "userId" TEXT,
+    "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "expiryDate" TIMESTAMP(3),
+
+    CONSTRAINT "Otp_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Contact" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "phoneNumber" TEXT NOT NULL,
+    "message" TEXT NOT NULL,
+
+    CONSTRAINT "Contact_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_id_key" ON "User"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_phoneNumber_key" ON "User"("phoneNumber");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Product_id_key" ON "Product"("id");
@@ -66,3 +92,9 @@ CREATE UNIQUE INDEX "Cart_id_key" ON "Cart"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Order_id_key" ON "Order"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Otp_id_key" ON "Otp"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Contact_id_key" ON "Contact"("id");

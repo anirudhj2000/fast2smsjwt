@@ -16,7 +16,7 @@ datasource db {
 model User {
   id          String    @id @unique @default(cuid())
   name        String
-  phoneNumber String
+  phoneNumber String    @unique
   city        String
   address     String?
   state       String?
@@ -53,4 +53,21 @@ model Order {
   products    Json[]
   totalAmount Decimal
   orderDate   DateTime
+}
+
+model Otp {
+  id          String    @id @unique @default(cuid())
+  otp         String
+  phoneNumber String
+  userId      String?
+  createdAt   DateTime? @default(now())
+  expiryDate  DateTime?
+}
+
+model Contact {
+  id          String @id @unique @default(cuid())
+  name        String
+  email       String
+  phoneNumber String
+  message     String
 }
