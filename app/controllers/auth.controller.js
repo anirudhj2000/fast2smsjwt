@@ -1,9 +1,6 @@
 const config = require("../config/auth.config");
 const { PrismaClient } = require("@prisma/client");
-var jwt = require("jsonwebtoken");
-var bcrypt = require("bcryptjs");
-// let fetch = import("node-fetch");
-
+const jwt = require("jsonwebtoken");
 async function loadApp() {
   const fetch = import("node-fetch");
 }
@@ -14,13 +11,13 @@ const prisma = new PrismaClient();
 function generateOTP(length = 6) {
   let otp = "";
   for (let i = 0; i < length; i++) {
-    otp += Math.floor(Math.random() * 10); // Generates a random number between  0 and  9
+    otp += Math.floor(Math.random() * 10);
   }
   return otp;
 }
 
+// Signup controller
 exports.signup = (req, res) => {
-  // Save User to Database
   let obj = {
     name: req.body.name,
     phoneNumber: req.body.phoneNumber,
@@ -38,7 +35,7 @@ exports.signup = (req, res) => {
         })
         .catch((err) => {
           console("err", err);
-          res.status(500).send({ message: err.message });
+          res.status(403).send({ message: err.message });
         });
     })
     .catch((err) => {
@@ -59,16 +56,18 @@ exports.signin = (req, res) => {
 
       this.sendOtp(req.body.phoneNumber)
         .then((resData) => {
-          res.status(200).send({ message: "Verify OTP to continue" });
+          if (resData.return)
+            res.status(200).send({ message: "Verify OTP to continue" });
+          else throw resData;
         })
         .catch((err) => {
           console.log("err", err);
-          res.status(500).send({ message: err.message });
+          res.status(500).send({ message: "Some error has occurred" });
         });
     })
     .catch((err) => {
       console.log("err", err);
-      res.status(500).send({ message: err.message });
+      res.status(500).send({ message: "Some error has occurred" });
     });
 };
 
@@ -91,15 +90,6 @@ exports.sendOtp = (phoneNumber) => {
     })
       .then((response) => response.json())
       .then((json) => {
-        console.log(
-          "logging",
-          {
-            otp: body.variables_values,
-            phoneNumber: phoneNumber,
-            createdAt: Date.now(),
-          },
-          json
-        );
         if (json.return) {
           prisma.otp
             .create({
@@ -141,15 +131,15 @@ exports.verifyOtp = (req, res) => {
             const token = jwt.sign({ id: user.id }, config.secret, {
               algorithm: "HS256",
               allowInsecureKeySizes: true,
-              expiresIn: 400, // 24 hours
+              expiresIn: 86400, // 24 hours
             });
 
-            let obj = { ...user };
-
-            res
-              .status(200)
-              .header("Authorization", `Bearer ${token}`)
-              .send(user);
+            res.cookie("jwt", token, {
+              httpOnly: true,
+              secure: true,
+              sameSite: "none",
+            });
+            res.status(200).send(user);
           } else {
             res.status(401).send({ message: "Incorrect OTP" });
           }
