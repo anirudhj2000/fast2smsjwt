@@ -1,5 +1,5 @@
 const authJwt = require("../middleware/authJwt");
-const controller = require("../controllers/user.controller");
+const userController = require("../controllers/user.controller");
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -10,7 +10,17 @@ module.exports = function (app) {
     next();
   });
 
-  app.get("/api/test/all", controller.allAccess);
+  app.post("/api/users", userController.createUser);
 
-  app.get("/api/test/user", [authJwt.verifyToken], controller.userBoard);
+  // Get All Users
+  app.get("/api/users", userController.getAllUsers);
+
+  // Get a User by ID
+  app.get("/api/users/:id", userController.getUserById);
+
+  // Update a User
+  app.put("/api/users/:id", userController.updateUser);
+
+  // Delete a User
+  app.delete("/api/users/:id", userController.deleteUser);
 };
