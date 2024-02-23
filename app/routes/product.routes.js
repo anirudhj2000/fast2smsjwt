@@ -10,21 +10,15 @@ module.exports = function (app) {
     next();
   });
 
-  app.get(
-    "/api/products",
-    [authJwt.verifyToken],
-    productController.getProducts
-  );
-
   app.post(
     "/api/products/search",
-    [authJwt.verifyToken],
+    // [authJwt.verifyToken],
     productController.searchProducts
   );
 
   app.post(
     "/api/products",
-    [authJwt.verifyToken],
+    // [authJwt.verifyToken],
     productController.createProduct
   );
 
@@ -41,8 +35,8 @@ module.exports = function (app) {
   );
 
   app.get(
-    "/api/products/:id",
-    [authJwt.verifyToken],
+    "/api/products",
+    // [authJwt.verifyToken],
     productController.getProductById
   );
 };

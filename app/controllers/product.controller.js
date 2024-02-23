@@ -25,15 +25,15 @@ exports.searchProducts = async (req, res) => {
         };
       }
 
-      if (minRating && maxRating) {
-        whereClause.rating = {
-          gte: parseFloat(minRating),
-          lte: parseFloat(maxRating),
-        };
-      }
+      //   if (minRating && maxRating) {
+      //     whereClause.rating = {
+      //       gte: parseFloat(minRating),
+      //       lte: parseFloat(maxRating),
+      //     };
+      //   }
 
       if (minDiscount) {
-        whereClause.discount = {
+        whereClause.discountedAmount = {
           gt: parseFloat(minDiscount),
         };
       }
@@ -107,8 +107,8 @@ exports.deleteProduct = async (req, res) => {
 exports.getProductById = async (req, res) => {
   const { id } = req.params;
   try {
-    const product = await prisma.product.findUnique({
-      where: { id: Number(id) },
+    const product = await prisma.product.findFirst({
+      where: { id: id },
     });
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
