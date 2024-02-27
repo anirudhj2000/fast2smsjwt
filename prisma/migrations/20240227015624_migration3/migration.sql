@@ -17,12 +17,15 @@ CREATE TABLE "Product" (
     "skuId" TEXT NOT NULL,
     "productTitle" TEXT NOT NULL,
     "description" TEXT,
-    "price" DECIMAL(65,30) NOT NULL,
+    "price" DOUBLE PRECISION NOT NULL,
     "discountAvailable" BOOLEAN DEFAULT false,
-    "discountedAmount" DECIMAL(65,30),
+    "discountedAmount" DOUBLE PRECISION,
     "discountPercentage" INTEGER,
-    "quantity" INTEGER NOT NULL,
+    "quantity" INTEGER,
     "productImages" TEXT[],
+    "category" TEXT[],
+    "fold" TEXT,
+    "colors" TEXT[],
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
 );
@@ -31,7 +34,7 @@ CREATE TABLE "Product" (
 CREATE TABLE "Cart" (
     "id" TEXT NOT NULL,
     "userDetails" JSONB NOT NULL,
-    "cartTotal" DECIMAL(65,30) NOT NULL,
+    "cartTotal" DOUBLE PRECISION NOT NULL,
     "products" JSONB[],
     "cartStatus" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL,

@@ -28,18 +28,21 @@ model Product {
   skuId              String   @unique
   productTitle       String
   description        String?
-  price              Decimal
+  price              Float
   discountAvailable  Boolean? @default(false)
-  discountedAmount   Decimal?
+  discountedAmount   Float?
   discountPercentage Int?
-  quantity           Int
+  quantity           Int?
   productImages      String[]
+  category           String[]
+  fold               String?
+  colors             String[]
 }
 
 model Cart {
   id          String    @id @unique @default(cuid())
   userDetails Json
-  cartTotal   Decimal
+  cartTotal   Float
   products    Json[]
   cartStatus  String
   createdAt   DateTime
