@@ -2,76 +2,96 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 exports.searchProducts = async (req, res) => {
-  const { PrismaClient } = require("@prisma/client");
-  const prisma = new PrismaClient();
+  console.log("req body, porducts", req.body);
+  try {
+    const {
+      query,
+      minPrice,
+      maxPrice,
+      minDiscount,
+      category,
+      colors,
+      fold,
+      page = 1,
+      limit = 10,
+    } = req.body;
 
-  exports.searchProducts = async (req, res) => {
-    try {
-      const { query, minPrice, maxPrice, minRating, maxRating, minDiscount } =
-        req.body;
-      const { page = 1, limit = 10 } = req.query;
-      const whereClause = {
-        name: {
-          contains: query,
-          mode: "insensitive",
-        },
+    const whereClause = {};
+
+    if (query.length > 0) {
+      whereClause.productTitle = {
+        contains: query,
+        mode: "insensitive",
       };
-
-      // Range-based filters
-      if (minPrice && maxPrice) {
-        whereClause.price = {
-          gte: parseFloat(minPrice),
-          lte: parseFloat(maxPrice),
-        };
-      }
-
-      //   if (minRating && maxRating) {
-      //     whereClause.rating = {
-      //       gte: parseFloat(minRating),
-      //       lte: parseFloat(maxRating),
-      //     };
-      //   }
-
-      if (minDiscount) {
-        whereClause.discountedAmount = {
-          gt: parseFloat(minDiscount),
-        };
-      }
-
-      // Pagination
-      const skip = (page - 1) * limit;
-
-      // Fetch products with pagination and filters
-      const products = await prisma.product.findMany({
-        where: whereClause,
-        skip: skip,
-        take: parseInt(limit),
-      });
-
-      // Total number of products matching the filters (for pagination purposes)
-      const totalProducts = await prisma.product.count({
-        where: whereClause,
-      });
-
-      // Calculate total pages
-      const totalPages = Math.ceil(totalProducts / limit);
-
-      // Send response with products and pagination info
-      res.status(200).json({
-        products,
-        totalPages,
-        currentPage: parseInt(page),
-      });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
     }
-  };
-};
 
+    // Range-based filters
+    if (minPrice && maxPrice) {
+      whereClause.price = {
+        gte: parseFloat(minPrice),
+        lte: parseFloat(maxPrice),
+      };
+    }
+
+    if (minDiscount) {
+      whereClause.discountedAmount = {
+        gt: parseFloat(minDiscount),
+      };
+    }
+
+    if (category) whereClause.category = { has: category };
+    if (fold) whereClause.fold = { contains: fold };
+    if (colors) whereClause.colors = { has: colors };
+
+    // Pagination
+    const skip = (page - 1) * limit;
+
+    // Fetch products with pagination and filters
+    const products = await prisma.product.findMany({
+      where: whereClause,
+      skip: skip,
+      take: parseInt(limit),
+    });
+
+    console.log("here", whereClause);
+
+    // Total number of products matching the filters (for pagination purposes)
+    const totalProducts = await prisma.product.count({
+      where: whereClause,
+    });
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    // Send response with products and pagination info
+    res.status(200).json({
+      products,
+      totalPages,
+      totalProducts,
+      currentPage: parseInt(page),
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 exports.createProduct = async (req, res) => {
+  let obj = {
+    skuId: req.body.skuId,
+    productTitle: req.body.productTitle,
+    description: req.body.description || null,
+    price: req.body.price,
+    discountAvailable: req.body.discountAvailable,
+    discountedAmount: req.body.discountedAmount || null,
+    discountPercentage: req.body.discountPercentage || null,
+    quantity: req.body.quantity || null,
+    productImages: req.body.productImages,
+    category: req.body.category,
+    fold: req.body.fold || null,
+    colors: req.body.colors,
+  };
   try {
     const newProduct = await prisma.product.create({
-      data: req.body,
+      data: obj,
     });
     res.status(201).json(newProduct);
   } catch (error) {
