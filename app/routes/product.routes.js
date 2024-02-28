@@ -30,7 +30,7 @@ module.exports = function (app) {
 
   app.delete(
     "/api/products/:id",
-    [authJwt.verifyToken],
+    // [authJwt.verifyToken],
     productController.deleteProduct
   );
 
