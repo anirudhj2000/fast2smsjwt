@@ -24,7 +24,7 @@ module.exports = function (app) {
 
   app.put(
     "/api/products/:id",
-    [authJwt.verifyToken],
+    // [authJwt.verifyToken],
     productController.updateProduct
   );
 
@@ -35,7 +35,7 @@ module.exports = function (app) {
   );
 
   app.get(
-    "/api/products",
+    "/api/products/:id",
     // [authJwt.verifyToken],
     productController.getProductById
   );
