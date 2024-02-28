@@ -34,8 +34,8 @@ exports.searchProducts = async (req, res) => {
     }
 
     if (minDiscount) {
-      whereClause.discountedAmount = {
-        gt: parseFloat(minDiscount),
+      whereClause.discountPercentage = {
+        gte: parseFloat(minDiscount),
       };
     }
 
