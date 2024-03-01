@@ -22,12 +22,39 @@ exports.getCarts = async (req, res) => {
 };
 
 exports.createCart = async (req, res) => {
+  let obj = {
+    userDetails: {},
+    cartTotal: 0,
+    products: [],
+    cartStatus: "",
+    createdAt: new Date(),
+    updatedAt: null,
+  };
+
+  if (Object.keys(req.body.userDetails).length == 0) {
+    res.status(401).json({ message: "Please add user details" });
+    return;
+  }
+
+  if (req.body.products.length == 0) {
+    res.status(404).json({ message: "Please add products to cart" });
+    return;
+  }
+
+  obj.cartStatus = "inProgress";
+  obj.createdAt = new Date();
+
+  obj = { ...obj, ...req.body };
+
+  console.log("cart obj body", obj, new Date());
+
   try {
     const newCart = await prisma.cart.create({
-      data: req.body,
+      data: obj,
     });
     res.status(201).json(newCart);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
