@@ -109,6 +109,7 @@ exports.sendOtp = (phoneNumber) => {
         } else reject();
       })
       .catch((err) => {
+        console.log("err", err);
         console.error(err);
         reject();
       });
