@@ -5,7 +5,7 @@ require("dotenv").config();
 const app = express();
 
 var corsOptions = {
-  origin: "https://localhost:3001",
+  origin: ["https://localhost:3001", "https://mahakali-ui-nuk9.vercel.app/"],
 };
 
 app.use(cors(corsOptions));
