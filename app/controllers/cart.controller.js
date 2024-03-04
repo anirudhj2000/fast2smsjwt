@@ -15,6 +15,9 @@ exports.getCarts = async (req, res) => {
       carts,
       totalPages,
       currentPage: parseInt(page),
+      orderBy: {
+        createdAt: "desc", // Order by date in descending order
+      },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
