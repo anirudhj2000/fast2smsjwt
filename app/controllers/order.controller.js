@@ -47,3 +47,32 @@ exports.createOrder = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.getOrders = async (req, res) => {
+  try {
+    let page = parseInt(req.query.page) || 1;
+    let items = parseInt(req.query.limit) || 10;
+
+    const skip = (page - 1) * items;
+
+    // console.log("req", req);
+
+    const orders = await prisma.order.findMany({
+      skip: skip,
+      take: items,
+      orderBy: {
+        orderDate: "desc", // Order by date in descending order
+      },
+    });
+
+    // Optionally, you can also fetch the total count of orders for pagination purposes
+    const totalOrders = await prisma.order.count();
+
+    res.status(200).json({
+      orders,
+      totalOrders,
+    });
+  } catch (error) {
+    console.log("error", error);
+  }
+};
