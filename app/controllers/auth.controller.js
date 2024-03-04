@@ -106,7 +106,10 @@ exports.sendOtp = (phoneNumber) => {
               console.log("err", err);
               reject();
             });
-        } else reject();
+        } else {
+          console.log("Json res otp", json);
+          reject();
+        }
       })
       .catch((err) => {
         console.log("err", err);
