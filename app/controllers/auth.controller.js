@@ -34,7 +34,7 @@ exports.signup = (req, res) => {
           res.status(200).send(user);
         })
         .catch((err) => {
-          console("err", err);
+          console.log("err", err);
           res.status(403).send({ message: err.message });
         });
     })
