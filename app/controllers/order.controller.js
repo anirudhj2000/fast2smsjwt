@@ -67,10 +67,12 @@ exports.getOrders = async (req, res) => {
 
     // Optionally, you can also fetch the total count of orders for pagination purposes
     const totalOrders = await prisma.order.count();
+    const totalPages = Math.ceil(totalOrders / items);
 
     res.status(200).json({
       orders,
       totalOrders,
+      totalPages,
     });
   } catch (error) {
     console.log("error", error);
