@@ -37,6 +37,7 @@ model Product {
   category           String[]
   fold               String?
   colors             String[]
+  blouse             Boolean?
 }
 
 model Cart {

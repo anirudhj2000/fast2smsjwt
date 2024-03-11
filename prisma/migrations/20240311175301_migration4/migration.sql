@@ -26,6 +26,7 @@ CREATE TABLE "Product" (
     "category" TEXT[],
     "fold" TEXT,
     "colors" TEXT[],
+    "blouse" BOOLEAN,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
 );
