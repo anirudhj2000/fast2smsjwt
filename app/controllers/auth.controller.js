@@ -25,7 +25,15 @@ exports.signup = (req, res) => {
   };
 
   this.sendOtp(req.body.phoneNumber)
-    .then((phoneData) => {
+    .then(async (phoneData) => {
+      let isUser = await prisma.user.findFirst({
+        where: { phoneNumber: req.body.phoneNumber },
+      });
+
+      if (isUser) {
+        res.status(200).send({ message: "User already exists" });
+      }
+
       prisma.user
         .create({
           data: obj,
@@ -107,7 +115,6 @@ exports.sendOtp = (phoneNumber) => {
               reject();
             });
         } else {
-          console.log("Json res otp", json);
           reject();
         }
       })
