@@ -1,5 +1,21 @@
 const authJwt = require("../middleware/authJwt");
 const productController = require("../controllers/product.controller");
+const multer = require("multer");
+const path = require("path");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "images/");
+  },
+  filename: function (req, file, cb) {
+    console.log("file", file);
+    cb(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    );
+  },
+});
+const upload = multer({ storage: storage });
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -39,4 +55,12 @@ module.exports = function (app) {
     // [authJwt.verifyToken],
     productController.getProductById
   );
+
+  app.post(
+    "/api/products/image",
+    upload.array("productImages", 10),
+    productController.imageUpload
+  );
+
+  app.delete("/api/products/image/:imageName", productController.deleteImage);
 };
