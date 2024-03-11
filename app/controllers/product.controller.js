@@ -146,7 +146,7 @@ exports.getProductById = async (req, res) => {
 
 exports.imageUpload = async (req, res) => {
   const fileUrls = req.files.map((file) => {
-    return `${req.protocol}://${req.headers.host}/uploads/${file.filename}`;
+    return `${req.protocol}://${req.headers.host}/images/${file.filename}`;
   });
   let obj = {
     images: fileUrls,
