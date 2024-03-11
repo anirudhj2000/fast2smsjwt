@@ -1,8 +1,10 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const path = require("path");
+const fs = require("fs");
 
 exports.searchProducts = async (req, res) => {
-  console.log("req body, porducts", req.body);
+  console.log("req body", req.body);
   try {
     const {
       query,
@@ -88,6 +90,7 @@ exports.createProduct = async (req, res) => {
     category: req.body.category,
     fold: req.body.fold || null,
     colors: req.body.colors,
+    blouse: req.body.blouse,
   };
   try {
     const newProduct = await prisma.product.create({
@@ -139,4 +142,28 @@ exports.getProductById = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+};
+
+exports.imageUpload = async (req, res) => {
+  const fileUrls = req.files.map((file) => {
+    return `${req.protocol}://${req.headers.host}/uploads/${file.filename}`;
+  });
+  let obj = {
+    images: fileUrls,
+  };
+
+  res.status(200).send(obj);
+};
+
+exports.deleteImage = async (req, res) => {
+  const imageName = req.params.imageName;
+  const imagePath = path.join(__dirname, "../../", "images", imageName);
+
+  fs.unlink(imagePath, (err) => {
+    if (err) {
+      console.error("Error deleting image:", err);
+      return res.status(500).send("Error deleting image");
+    }
+    res.send("Image deleted successfully");
+  });
 };
