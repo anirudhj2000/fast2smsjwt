@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 const sendOrderEmail = (order) => {
   // Email sending logic goes here
   // For demonstration purposes, we'll just log the order details
-  console.log(`Sending order email for order ID: ${order.id}`);
+  // console.log(`Sending order email for order ID: ${order.id}`);
 };
 
 exports.createOrder = async (req, res) => {
@@ -32,8 +32,6 @@ exports.createOrder = async (req, res) => {
   }
 
   obj = { ...obj, ...req.body };
-
-  console.log("cart obj body", obj, new Date());
   try {
     const newOrder = await prisma.order.create({
       data: obj,
