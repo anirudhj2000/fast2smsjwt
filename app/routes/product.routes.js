@@ -2,10 +2,14 @@ const authJwt = require("../middleware/authJwt");
 const productController = require("../controllers/product.controller");
 const multer = require("multer");
 const path = require("path");
+const { request } = require("http");
+const fs = require("fs");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "images/");
+    let path = "images/";
+    fs.mkdirSync(path, { recursive: true });
+    cb(null, path);
   },
   filename: function (req, file, cb) {
     console.log("file", file);
