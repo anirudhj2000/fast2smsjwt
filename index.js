@@ -12,6 +12,7 @@ var corsOptions = {
     "http://144.24.111.231:3001",
     "http://144.24.111.231:3001",
     "https://mahakalisarees.com",
+    "https://www.mahakalisarees.com",
   ],
 };
 
