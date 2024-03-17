@@ -10,17 +10,14 @@ var corsOptions = {
     "https://localhost:3001",
     "https://mahakali-ui-nuk9.vercel.app",
     "http://144.24.111.231:3001",
+    "http://144.24.111.231:3001",
+    "https://mahakalisarees.com",
   ],
 };
 
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// simple route
-// app.get("/", (req, res) => {
-//   res.status(200).send({ message: "here here" });
-// });
 
 app.use("/images", express.static("images"));
 
