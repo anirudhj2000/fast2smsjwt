@@ -46,7 +46,8 @@ exports.getUserById = async (req, res) => {
 exports.updateUser = async (req, res) => {
   const { id } = req.params;
   try {
-    const { name, phoneNumber, city, address, state } = req.body;
+    const { name, phoneNumber, city, address, state, admin, verified } =
+      req.body;
     const updatedUser = await prisma.user.update({
       where: { id },
       data: {
@@ -55,6 +56,8 @@ exports.updateUser = async (req, res) => {
         city,
         address,
         state,
+        admin,
+        verified,
       },
     });
     res.status(200).json(updatedUser);
