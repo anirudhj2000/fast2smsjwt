@@ -89,8 +89,8 @@ exports.createProduct = async (req, res) => {
     productImages: req.body.productImages,
     category: req.body.category,
     fold: req.body.fold || null,
-    colors: req.body.colors,
     blouse: req.body.blouse,
+    newProduct: req.body.newProduct || false,
   };
   try {
     const newProduct = await prisma.product.create({
@@ -146,7 +146,7 @@ exports.getProductById = async (req, res) => {
 
 exports.imageUpload = async (req, res) => {
   const fileUrls = req.files.map((file) => {
-    return `${req.protocol}://${req.headers.host}/images/${file.filename}`;
+    return `${file.filename}`;
   });
   let obj = {
     images: fileUrls,
