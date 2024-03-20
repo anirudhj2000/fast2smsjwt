@@ -60,6 +60,9 @@ exports.searchProducts = async (req, res) => {
     // Total number of products matching the filters (for pagination purposes)
     const totalProducts = await prisma.product.count({
       where: whereClause,
+      orderBy: {
+        updatedAt: "desc", // Order by date in descending order
+      },
     });
 
     // Calculate total pages
