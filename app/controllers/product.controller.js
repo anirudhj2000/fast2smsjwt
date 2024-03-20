@@ -149,6 +149,7 @@ exports.getProductById = async (req, res) => {
 
 exports.imageUpload = async (req, res) => {
   const fileUrls = req.files.map((file) => {
+    console.log("product controller -- file", file);
     return `${file.filename}`;
   });
   let obj = {
@@ -161,6 +162,8 @@ exports.imageUpload = async (req, res) => {
 exports.deleteImage = async (req, res) => {
   const imageName = req.params.imageName;
   const imagePath = path.join(__dirname, "../../", "images", imageName);
+
+  console.log("img path", imagePath);
 
   fs.unlink(imagePath, (err) => {
     if (err) {
