@@ -26,8 +26,8 @@ model User {
 }
 
 model Product {
-  id                 String   @id @unique @default(uuid())
-  skuId              String   @unique
+  id                 String    @id @unique @default(uuid())
+  skuId              String    @unique
   productTitle       String
   description        String?
   price              Float
@@ -39,7 +39,8 @@ model Product {
   category           String[]
   fold               String?
   blouse             Boolean?
-  newProduct         Boolean? @default(false)
+  newProduct         Boolean?  @default(false)
+  updatedAt          DateTime? @default(now())
 }
 
 model Cart {
@@ -48,8 +49,8 @@ model Cart {
   cartTotal   Float
   products    Json[]
   cartStatus  String
-  createdAt   DateTime
-  updatedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @default(now())
 }
 
 model Order {
@@ -58,7 +59,7 @@ model Order {
   userDetails Json
   products    Json[]
   totalAmount Decimal
-  orderDate   DateTime
+  orderDate   DateTime @default(now())
 }
 
 model Otp {
@@ -66,7 +67,7 @@ model Otp {
   otp         String
   phoneNumber String
   userId      String?
-  createdAt   DateTime?
+  createdAt   DateTime? @default(now())
   expiryDate  DateTime?
 }
 

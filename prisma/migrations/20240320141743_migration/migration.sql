@@ -29,6 +29,7 @@ CREATE TABLE "Product" (
     "fold" TEXT,
     "blouse" BOOLEAN,
     "newProduct" BOOLEAN DEFAULT false,
+    "updatedAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
 );
@@ -40,8 +41,8 @@ CREATE TABLE "Cart" (
     "cartTotal" DOUBLE PRECISION NOT NULL,
     "products" JSONB[],
     "cartStatus" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL,
-    "updatedAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Cart_pkey" PRIMARY KEY ("id")
 );
@@ -53,7 +54,7 @@ CREATE TABLE "Order" (
     "userDetails" JSONB NOT NULL,
     "products" JSONB[],
     "totalAmount" DECIMAL(65,30) NOT NULL,
-    "orderDate" TIMESTAMP(3) NOT NULL,
+    "orderDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Order_pkey" PRIMARY KEY ("id")
 );
@@ -64,7 +65,7 @@ CREATE TABLE "Otp" (
     "otp" TEXT NOT NULL,
     "phoneNumber" TEXT NOT NULL,
     "userId" TEXT,
-    "createdAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "expiryDate" TIMESTAMP(3),
 
     CONSTRAINT "Otp_pkey" PRIMARY KEY ("id")
