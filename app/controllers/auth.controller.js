@@ -117,6 +117,7 @@ exports.sendOtp = (phoneNumber) => {
               reject();
             });
         } else {
+          console.log("jason", json);
           reject();
         }
       })
@@ -152,6 +153,7 @@ exports.verifyOtp = (req, res) => {
               secure: true,
               sameSite: "none",
             });
+
             res.status(200).send(user);
           } else {
             res.status(401).send({ message: "Incorrect OTP" });
