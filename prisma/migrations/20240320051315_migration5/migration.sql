@@ -7,6 +7,8 @@ CREATE TABLE "User" (
     "address" TEXT,
     "state" TEXT,
     "createdAt" TIMESTAMP(3),
+    "admin" BOOLEAN DEFAULT false,
+    "verified" BOOLEAN DEFAULT false,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -18,15 +20,15 @@ CREATE TABLE "Product" (
     "productTitle" TEXT NOT NULL,
     "description" TEXT,
     "price" DOUBLE PRECISION NOT NULL,
-    "discountAvailable" BOOLEAN DEFAULT false,
+    "discountAvailable" BOOLEAN,
     "discountedAmount" DOUBLE PRECISION,
     "discountPercentage" INTEGER,
     "quantity" INTEGER,
     "productImages" TEXT[],
     "category" TEXT[],
     "fold" TEXT,
-    "colors" TEXT[],
     "blouse" BOOLEAN,
+    "newProduct" BOOLEAN DEFAULT false,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
 );
@@ -62,10 +64,18 @@ CREATE TABLE "Otp" (
     "otp" TEXT NOT NULL,
     "phoneNumber" TEXT NOT NULL,
     "userId" TEXT,
-    "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP(3),
     "expiryDate" TIMESTAMP(3),
 
     CONSTRAINT "Otp_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Category" (
+    "id" TEXT NOT NULL,
+    "category" TEXT NOT NULL,
+
+    CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -99,6 +109,9 @@ CREATE UNIQUE INDEX "Order_id_key" ON "Order"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Otp_id_key" ON "Otp"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Category_id_key" ON "Category"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Contact_id_key" ON "Contact"("id");

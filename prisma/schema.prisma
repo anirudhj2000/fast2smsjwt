@@ -14,44 +14,46 @@ datasource db {
 }
 
 model User {
-  id          String    @id @unique @default(cuid())
+  id          String    @id @unique
   name        String
   phoneNumber String    @unique
   city        String
   address     String?
   state       String?
   createdAt   DateTime?
+  admin       Boolean?  @default(false)
+  verified    Boolean?  @default(false)
 }
 
 model Product {
-  id                 String   @id @unique @default(cuid())
+  id                 String   @id @unique
   skuId              String   @unique
   productTitle       String
   description        String?
   price              Float
-  discountAvailable  Boolean? @default(false)
+  discountAvailable  Boolean?
   discountedAmount   Float?
   discountPercentage Int?
   quantity           Int?
   productImages      String[]
   category           String[]
   fold               String?
-  colors             String[]
   blouse             Boolean?
+  newProduct         Boolean? @default(false)
 }
 
 model Cart {
-  id          String    @id @unique @default(cuid())
+  id          String    @id @unique
   userDetails Json
   cartTotal   Float
   products    Json[]
   cartStatus  String
   createdAt   DateTime
-  updatedAt   DateTime? @updatedAt
+  updatedAt   DateTime?
 }
 
 model Order {
-  id          String   @id @unique @default(cuid())
+  id          String   @id @unique
   cartId      String
   userDetails Json
   products    Json[]
@@ -60,12 +62,17 @@ model Order {
 }
 
 model Otp {
-  id          String    @id @unique @default(cuid())
+  id          String    @id @unique
   otp         String
   phoneNumber String
   userId      String?
-  createdAt   DateTime? @default(now())
+  createdAt   DateTime?
   expiryDate  DateTime?
+}
+
+model Category {
+  id       String @id @unique @default(cuid())
+  category String
 }
 
 model Contact {
