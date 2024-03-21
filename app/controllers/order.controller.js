@@ -12,7 +12,6 @@ var transporter = nodemailer.createTransport({
 
 // Function to send email
 const sendOrderEmail = (order) => {
-  // 2 Emails :  1 for customer , 1 for order
   let subject =
     "Order:" +
     order.id +
