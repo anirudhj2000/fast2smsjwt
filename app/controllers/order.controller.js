@@ -1,15 +1,12 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const nodemailer = require("nodemailer");
-
-const transporter = nodemailer.createTransport({
-  service: "Gmail",
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+var nodemailer = require("nodemailer");
+var transporter = nodemailer.createTransport({
+  host: "smtp.zeptomail.in",
+  port: 587,
   auth: {
-    user: "anirudhjoshi485@gmail.com",
-    pass: process.env.EMAIL_PASSWORD,
+    user: "emailapikey",
+    pass: process.env.EMAIL_API_KEY,
   },
 });
 
@@ -24,12 +21,22 @@ const sendOrderEmail = (order) => {
     " - " +
     order.userDetails.phoneNumber;
 
+  let tableBody = "";
+
+  for (let i = 0; i < order.products.length; i++) {
+    tableBody += `<tr> <td>${order.products[i].name}</td> <td>${order.products[i].quantity}</td> <td>${order.products[i].price}</td> </tr>`;
+  }
+
   const mailOptions = {
-    from: "anirudhjoshi485@gmail.com",
-    to: "theinfinitysolutions9@gmail.com",
+    from: '"Mahakali Sarees" <noreply@anirudhaengineers.in>',
+    to: "anirudhjoshi485@gmail.com",
     subject: subject,
-    html: "<div> <h2>Order Confirmation</h2> <p>Dear Anirudh,</p> <p>Thank you for your order. Your order details are as follows:</p> <h3>Order Summary</h3> <table> <tr > <th>Product</th> <th>Quantity</th> <th>Price</th> </tr> <!-- Products will be inserted here --> </table> <h3>User Details</h3> <p>City: Hyderabad</p> <p>Phone Number: 9398542806</p> <h3>Order Total</h3> <p>Total Amount: ₹2000</p> <p>Order Date: 2024-03-12</p> <p>Thank you for shopping with us. If you have any questions, please contact us at support@example.com.</p> <p>Best regards,</p> <p>Your Company Name</p> </div>",
+    html:
+      "<div> <h2>Order Confirmation</h2> <p>Dear Anirudh,</p> <p>Thank you for your order. Your order details are as follows:</p> <h3>Order Summary</h3> <table> <tr > <th>Product</th> <th>Quantity</th> <th>Price</th> </tr> " +
+      tableBody +
+      " </table> <h3>User Details</h3> <p>City: Hyderabad</p> <p>Phone Number: 9398542806</p> <h3>Order Total</h3> <p>Total Amount: ₹2000</p> <p>Order Date: 2024-03-12</p> <p>Thank you for shopping with us. If you have any questions, please contact us at support@example.com.</p> <p>Best regards,</p> <p>Your Company Name</p> </div>",
   };
+
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       console.error("Error sending email: ", error);
@@ -46,6 +53,8 @@ exports.createOrder = async (req, res) => {
     products: [],
     orderDate: new Date(),
   };
+
+  console.log("orders reached here", req.body);
 
   if (Object.keys(req.body.userDetails).length == 0) {
     res.status(401).json({ message: "Please add user details" });
@@ -73,6 +82,7 @@ exports.createOrder = async (req, res) => {
 
     res.status(201).json(newOrder);
   } catch (error) {
+    console.log("error", error);
     res.status(500).json({ message: error.message });
   }
 };
