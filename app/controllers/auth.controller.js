@@ -51,12 +51,11 @@ exports.signup = (req, res) => {
     email: req.body.email,
   };
 
-  let encryptedString = encryptPhoneNumber(req.body.phoneNumber);
-  encryptedString = encryptedString
+  let encryptedString = encryptPhoneNumber(req.body.phoneNumber)
     .toString()
-    .replace("+", "xMl399Jk")
-    .replace("/", "Por19Ld")
-    .replace("=", "Ml11");
+    .replaceAll("+", "xMl399Jk")
+    .replaceAll("/", "Por19Ld")
+    .replaceAll("=", "Ml11");
 
   const hostUrl = req.protocol + "://" + req.get("host");
   const verificationURL = `${hostUrl}/api/auth/verifyUser/${encryptedString}`;
@@ -243,9 +242,9 @@ exports.verifyUser = (req, res) => {
   const { id } = req.params;
   let encryptedString = id
     .toString()
-    .replace("xMl399Jk", "+")
-    .replace("Por19Ld", "/")
-    .replace("Ml11", "=");
+    .replaceAll("xMl399Jk", "+")
+    .replaceAll("Por19Ld", "/")
+    .replaceAll("Ml11", "=");
 
   const hostUrl = req.protocol + "://" + req.get("host");
 
