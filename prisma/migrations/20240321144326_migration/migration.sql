@@ -9,6 +9,7 @@ CREATE TABLE "User" (
     "createdAt" TIMESTAMP(3),
     "admin" BOOLEAN DEFAULT false,
     "verified" BOOLEAN DEFAULT false,
+    "email" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );

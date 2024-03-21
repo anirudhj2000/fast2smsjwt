@@ -23,6 +23,7 @@ model User {
   createdAt   DateTime?
   admin       Boolean?  @default(false)
   verified    Boolean?  @default(false)
+  email       String?
 }
 
 model Product {
