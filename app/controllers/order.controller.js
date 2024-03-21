@@ -93,17 +93,14 @@ exports.getOrders = async (req, res) => {
 
     const skip = (page - 1) * items;
 
-    // console.log("req", req);
-
     const orders = await prisma.order.findMany({
       skip: skip,
       take: items,
       orderBy: {
-        orderDate: "desc", // Order by date in descending order
+        orderDate: "desc",
       },
     });
 
-    // Optionally, you can also fetch the total count of orders for pagination purposes
     const totalOrders = await prisma.order.count();
     const totalPages = Math.ceil(totalOrders / items);
 

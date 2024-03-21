@@ -269,7 +269,7 @@ exports.verifyUser = (req, res) => {
                   <body>
                     <h1>Verification Successful !!</h1>
                     <p>Your Account has been successfully verified.</p>
-                    <a href="${"www.mahakalisarees.com"}">Back to Login</a>
+                    <a href="${"http://www.mahakalisarees.com"}">Back to Login</a>
                   </body>
                 </html>
             `);
