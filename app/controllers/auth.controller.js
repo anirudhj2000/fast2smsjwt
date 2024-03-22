@@ -61,7 +61,6 @@ exports.signup = (req, res) => {
   const verificationURL = `${hostUrl}/api/auth/verifyUser/${encryptedString}`;
   console.log("hostUrl", hostUrl);
 
-  verifyUserByMail(verificationURL, obj);
   try {
     prisma.user
       .create({
@@ -69,11 +68,28 @@ exports.signup = (req, res) => {
       })
       .then((user) => {
         if (obj.email) {
-          verifyUserByMail(verificationURL, obj.email);
+          verifyUserByMail(verificationURL, obj)
+            .then(() => {
+              console.log("email sent");
+              res.status(200).send({
+                message:
+                  "User created successfully, Account Sent for verification",
+              });
+            })
+            .catch((err) => {
+              console.log("err", err);
+              res.status(403).send({
+                message: "Error while creating user, Please try again later",
+              });
+              prisma.user
+                .delete({
+                  where: { id: user.id },
+                })
+                .catch((err) => {
+                  console.log("err", err);
+                });
+            });
         }
-        res.status(200).send({
-          message: "User created successfully, Account Sent for verification",
-        });
       })
       .catch((err) => {
         console.log("err", err);
@@ -239,10 +255,10 @@ exports.verifyUser = (req, res) => {
                 confirmVerificationEmail(updatedUser.email);
               }
 
-              if (updatedUser.phoneNumber) {
-                console.log("phone check", updatedUser.email);
-                confirmVerificationPhone(updatedUser.phoneNumber);
-              }
+              // if (updatedUser.phoneNumber) {
+              //   console.log("phone check", updatedUser.email);
+              //   confirmVerificationPhone(updatedUser.phoneNumber);
+              // }
 
               res.status(200).send(`
                 <html>
@@ -301,7 +317,7 @@ const verifyUserByMail = (verficaitionURL, user) => {
 
   console.log("verficaitionURL", verficaitionURL, user);
   const mailOptions = {
-    from: '"Mahakali Sarees" <noreply@anirudhaengineers.in>',
+    from: '"Mahakali Sarees" <noreply@mahakalisarees.com>',
     to: "anirudhjoshi485@gmail.com",
     subject: subject,
     html:
@@ -314,57 +330,61 @@ const verifyUserByMail = (verficaitionURL, user) => {
       "</div>",
   };
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    console.log("email sent", error, info);
-    if (error) {
-      console.error("Error sending email: ", error);
-    } else {
-      console.log("Email sent: ", info.response);
-    }
+  return new Promise((resolve, reject) => {
+    transporter.sendMail(mailOptions, (error, info) => {
+      console.log("email sent", error, info);
+      if (error) {
+        console.error("Error sending email: ", error);
+        reject();
+      } else {
+        console.log("Email sent: ", info.response);
+        resolve();
+      }
+    });
   });
 };
 
-const confirmVerificationPhone = (phoneNumber) => {
-  const URL = "https://www.fast2sms.com/dev/bulkV2";
-  const body = {
-    message:
-      "Your account has been successfully verified. Please login to Mahakali Sarees with your registed mobile number " +
-      "https://www.mahakalisarees.com",
-    language: "english",
-    route: "q",
-    numbers: phoneNumber,
-  };
-  console.log("phoine body", body);
-  try {
-    fetch(URL, {
-      method: "post",
-      body: JSON.stringify(body),
-      headers: {
-        "Content-Type": "application/json",
-        authorization: process.env.FAST_2_API_KEY,
-      },
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        if (json.return) {
-          console.log("user notified", json);
-        } else {
-          throw json;
-        }
-      })
-      .catch((err) => {
-        console.log("err", err);
-        console.error(err);
-      });
-  } catch (err) {
-    console.log("err", err);
-    console.error(err);
-  }
-};
+// const confirmVerificationPhone = (phoneNumber) => {
+//   const URL = "https://www.fast2sms.com/dev/bulkV2";
+//   const body = {
+//     message:
+//       "Your account has been successfully verified. Please login to Mahakali Sarees with your registed mobile number " +
+//       "https://www.mahakalisarees.com",
+//     language: "english",
+//     route: "q",
+//     numbers: phoneNumber,
+//   };
+//   console.log("phoine body", body);
+//   try {
+//     fetch(URL, {
+//       method: "post",
+//       body: JSON.stringify(body),
+//       headers: {
+//         "Content-Type": "application/json",
+//         authorization: process.env.FAST_2_API_KEY,
+//       },
+//     })
+//       .then((response) => response.json())
+//       .then((json) => {
+//         if (json.return) {
+//           console.log("user notified", json);
+//         } else {
+//           throw json;
+//         }
+//       })
+//       .catch((err) => {
+//         console.log("err", err);
+//         console.error(err);
+//       });
+//   } catch (err) {
+//     console.log("err", err);
+//     console.error(err);
+//   }
+// };
 
 const confirmVerificationEmail = (email) => {
   const mailOptions = {
-    from: '"Mahakali Sarees" <noreply@anirudhaengineers.in>',
+    from: '"Mahakali Sarees" <noreply@mahakalisarees.com>',
     to: email,
     subject: "Account Verification",
     html:
