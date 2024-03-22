@@ -11,6 +11,45 @@ var transporter = nodemailer.createTransport({
 });
 
 // Function to send email
+const sendOrderEmailCustomer = (order) => {
+  let subject =
+    "Order:" +
+    order.id +
+    " - " +
+    order.userDetails.name +
+    " - " +
+    order.userDetails.phoneNumber;
+
+  let tableBody = "";
+
+  for (let i = 0; i < order.products.length; i++) {
+    tableBody += `<tr> <td>${order.products[i].productTitle}</td> <td>${order.products[i].quantity}</td> <td>${order.products[i].price}</td> </tr>`;
+  }
+
+  const mailOptions = {
+    from: '"Mahakali Sarees" <noreply@mahakalisarees.com>',
+    to: order.userDetails.email,
+    subject: subject,
+    html:
+      "<div> <h2>Order Confirmation</h2> <p>Dear " +
+      order.userDetails.name +
+      ",</p> <p>Thank you for your order. Your order details are as follows:</p> <h3>Order Summary</h3> <table> <tr > <th>Product</th> <th>Number of bales</th> <th>Price</th> </tr> " +
+      tableBody +
+      " </table> <p>Order Date:" +
+      new Date(order.orderDate) +
+      "/p> <p>Thank you for shopping with us. If you have any questions, please contact us at info@mahakalitextiles.in</p> <p>Best regards,</p> <p>Mahakali Sarees</p> </div>",
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error("Error sending email: ", error);
+    } else {
+      console.log("Email sent: ", info.response);
+      console.log("admin email sent");
+    }
+  });
+};
+
 const sendOrderEmail = (order) => {
   let subject =
     "Order:" +
@@ -23,17 +62,23 @@ const sendOrderEmail = (order) => {
   let tableBody = "";
 
   for (let i = 0; i < order.products.length; i++) {
-    tableBody += `<tr> <td>${order.products[i].name}</td> <td>${order.products[i].quantity}</td> <td>${order.products[i].price}</td> </tr>`;
+    tableBody += `<tr> <td>${order.products[i].productTitle}</td> <td>${order.products[i].quantity}</td> <td>${order.products[i].price}</td> </tr>`;
   }
 
   const mailOptions = {
-    from: '"Mahakali Sarees" <noreply@anirudhaengineers.in>',
+    from: '"Mahakali Sarees" <noreply@mahakalisarees.com>',
     to: "anirudhjoshi485@gmail.com",
     subject: subject,
     html:
-      "<div> <h2>Order Confirmation</h2> <p>Dear Anirudh,</p> <p>Thank you for your order. Your order details are as follows:</p> <h3>Order Summary</h3> <table> <tr > <th>Product</th> <th>Quantity</th> <th>Price</th> </tr> " +
+      "<div> <h2>Order Confirmation</h2> <h3>Order Summary</h3> <table> <tr > <th>Product</th> <th>Number of bales</th> <th>Price</th> </tr> " +
       tableBody +
-      " </table> <h3>User Details</h3> <p>City: Hyderabad</p> <p>Phone Number: 9398542806</p> <h3>Order Total</h3> <p>Total Amount: ₹2000</p> <p>Order Date: 2024-03-12</p> <p>Thank you for shopping with us. If you have any questions, please contact us at support@example.com.</p> <p>Best regards,</p> <p>Your Company Name</p> </div>",
+      " </table> <h3>User Details</h3> <p>City: " +
+      order.userDetails.city +
+      "</p> <p>Phone Number:" +
+      order.userDetails.phoneNumber +
+      " <p>Order Date:" +
+      new Date(order.orderDate) +
+      "</p> <p>Best regards,</p> <p>Mahakali Sarees</p> </div>",
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
@@ -41,6 +86,7 @@ const sendOrderEmail = (order) => {
       console.error("Error sending email: ", error);
     } else {
       console.log("Email sent: ", info.response);
+      console.log("customer email sent");
     }
   });
 };
@@ -77,7 +123,10 @@ exports.createOrder = async (req, res) => {
     });
 
     // // Send email with order details
+
     sendOrderEmail(newOrder);
+
+    if (newOrder.userDetails.email) sendOrderEmailCustomer(newOrder);
 
     res.status(201).json(newOrder);
   } catch (error) {
