@@ -61,6 +61,7 @@ exports.signup = (req, res) => {
   const verificationURL = `${hostUrl}/api/auth/verifyUser/${encryptedString}`;
   console.log("hostUrl", hostUrl);
 
+  verifyUserByMail(verificationURL, obj);
   try {
     prisma.user
       .create({
@@ -70,11 +71,8 @@ exports.signup = (req, res) => {
         if (obj.email) {
           verifyUserByMail(verificationURL, obj.email);
         }
-        if (obj.phoneNumber) {
-          verifyUserBySMS(verificationURL, obj.phoneNumber);
-        }
         res.status(200).send({
-          message: "User created successfully, Verify Account to continue",
+          message: "User created successfully, Account Sent for verification",
         });
       })
       .catch((err) => {
@@ -85,33 +83,6 @@ exports.signup = (req, res) => {
     console.log("err", err);
     res.status(403).send({ message: err.message });
   }
-
-  // this.sendOtp(req.body.phoneNumber)
-  //   .then(async (phoneData) => {
-  //     let isUser = await prisma.user.findFirst({
-  //       where: { phoneNumber: req.body.phoneNumber },
-  //     });
-
-  //     if (isUser) {
-  //       res.status(200).send({ message: "User already exists" });
-  //     }
-
-  //     prisma.user
-  //       .create({
-  //         data: obj,
-  //       })
-  //       .then((user) => {
-  //         res.status(200).send(user);
-  //       })
-  //       .catch((err) => {
-  //         console.log("err", err);
-  //         res.status(403).send({ message: err.message });
-  //       });
-  //   })
-  //   .catch((err) => {
-  //     console.log("err", err);
-  //     res.status(500).send({ message: "Internal server error" });
-  //   });
 };
 
 exports.signin = (req, res) => {
@@ -263,6 +234,16 @@ exports.verifyUser = (req, res) => {
               data: { verified: true },
             })
             .then((updatedUser) => {
+              if (updatedUser.email) {
+                console.log("email check", updatedUser.email);
+                confirmVerificationEmail(updatedUser.email);
+              }
+
+              if (updatedUser.phoneNumber) {
+                console.log("phone check", updatedUser.email);
+                confirmVerificationPhone(updatedUser.phoneNumber);
+              }
+
               res.status(200).send(`
                 <html>
                   <body>
@@ -297,18 +278,40 @@ function verifyUserPhoneNumber(encryptedPhoneNumber) {
   });
 }
 
-const verifyUserByMail = (verficaitionURL, email) => {
-  let subject = "Account Verification - Mahakali Sarees";
+const verifyUserByMail = (verficaitionURL, user) => {
+  let subject = "Account Verification - " + user.name;
 
-  console.log("verficaitionURL", verficaitionURL, email);
+  let userObj = { ...user };
+  let userHtml = "";
+
+  userHtml += "<div>";
+  userHtml += "<h3>User Details Verification</h3>";
+
+  for (const key in userObj) {
+    if (Object.hasOwnProperty.call(userObj, key)) {
+      userHtml += "<div style='display:flex;flex-direction:row;'>";
+      const element = userObj[key];
+      userHtml += `<p>${key} : </p>`;
+      userHtml += `<p>${element}</p>`;
+      userHtml += "</div>";
+    }
+  }
+
+  userHtml += "</div>";
+
+  console.log("verficaitionURL", verficaitionURL, user);
   const mailOptions = {
     from: '"Mahakali Sarees" <noreply@anirudhaengineers.in>',
-    to: email,
+    to: "anirudhjoshi485@gmail.com",
     subject: subject,
     html:
-      "<div> <h2>Account Verification</h2> <p>Dear User,</p> <p>Thank you for signing up with Mahakali Sarees. Please click on the link below to verify your account:</p> <a href=" +
+      "<div> <h2>Account Verification</h2> <p>Dear User,</p> <p>" +
+      user.name +
+      " has signed up with Mahakali Sarees. Please click on the link below to their your account:</p> <a href=" +
       verficaitionURL +
-      ">Verify Account</a></div>",
+      ">Verify Account</a> </br>" +
+      userHtml +
+      "</div>",
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
@@ -321,19 +324,18 @@ const verifyUserByMail = (verficaitionURL, email) => {
   });
 };
 
-const verifyUserBySMS = (verficaitionURL, phoneNumber) => {
+const confirmVerificationPhone = (phoneNumber) => {
   const URL = "https://www.fast2sms.com/dev/bulkV2";
   const body = {
     message:
-      " Click to verify - Mahakali Sarees ," +
-      "Account Verification link: " +
-      verficaitionURL,
+      "Your account has been successfully verified. Please login to Mahakali Sarees with your registed mobile number " +
+      "https://www.mahakalisarees.com",
     language: "english",
     route: "q",
     numbers: phoneNumber,
   };
   console.log("phoine body", body);
-  return new Promise((resolve, reject) => {
+  try {
     fetch(URL, {
       method: "post",
       body: JSON.stringify(body),
@@ -345,15 +347,76 @@ const verifyUserBySMS = (verficaitionURL, phoneNumber) => {
       .then((response) => response.json())
       .then((json) => {
         if (json.return) {
-          resolve(json);
+          console.log("user notified", json);
         } else {
-          reject(json);
+          throw json;
         }
       })
       .catch((err) => {
         console.log("err", err);
         console.error(err);
-        reject();
       });
+  } catch (err) {
+    console.log("err", err);
+    console.error(err);
+  }
+};
+
+const confirmVerificationEmail = (email) => {
+  const mailOptions = {
+    from: '"Mahakali Sarees" <noreply@anirudhaengineers.in>',
+    to: email,
+    subject: "Account Verification",
+    html:
+      "<div>  <h1>Verification Successful !!</h1>" +
+      "<p>Your Account has been successfully verified.</p>" +
+      ` <a href="${"https://www.mahakalisarees.com"}">Back to Login</a>` +
+      "</div>",
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    console.log("email sent", error, info);
+    if (error) {
+      console.error("Error sending email: ", error);
+    } else {
+      console.log("Email sent: ", info.response);
+    }
   });
 };
+
+// const verifyUserBySMS = (verficaitionURL, phoneNumber) => {
+//   const URL = "https://www.fast2sms.com/dev/bulkV2";
+//   const body = {
+//     message:
+//       " Click to verify - Mahakali Sarees ," +
+//       "Account Verification link: " +
+//       verficaitionURL,
+//     language: "english",
+//     route: "q",
+//     numbers: phoneNumber,
+//   };
+//   console.log("phoine body", body);
+//   return new Promise((resolve, reject) => {
+//     fetch(URL, {
+//       method: "post",
+//       body: JSON.stringify(body),
+//       headers: {
+//         "Content-Type": "application/json",
+//         authorization: process.env.FAST_2_API_KEY,
+//       },
+//     })
+//       .then((response) => response.json())
+//       .then((json) => {
+//         if (json.return) {
+//           resolve(json);
+//         } else {
+//           reject(json);
+//         }
+//       })
+//       .catch((err) => {
+//         console.log("err", err);
+//         console.error(err);
+//         reject();
+//       });
+//   });
+// };
