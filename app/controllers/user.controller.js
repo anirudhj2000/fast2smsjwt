@@ -77,3 +77,28 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.searchUsers = async (req, res) => {
+  const query = req.params.id;
+
+  console.log("query", query, req.params);
+  try {
+    const users = await prisma.user.findMany();
+
+    const searchResults = users.filter((user) => {
+      console.log("user", user);
+      if (
+        user.name.toString().toLowerCase().includes(query.toLowerCase()) ||
+        user.city.toString().toLowerCase().includes(query.toLowerCase()) ||
+        user.address?.toString().toLowerCase().includes(query.toLowerCase()) ||
+        user.phoneNumber?.toString().toLowerCase().includes(query.toLowerCase())
+      ) {
+        return user;
+      }
+    });
+    console.log("users", searchResults);
+    res.status(200).json(searchResults);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

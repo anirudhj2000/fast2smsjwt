@@ -23,4 +23,6 @@ module.exports = function (app) {
 
   // Delete a User
   app.delete("/api/users/:id", userController.deleteUser);
+
+  app.get("/api/users/search/:id", userController.searchUsers);
 };
