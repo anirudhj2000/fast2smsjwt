@@ -102,3 +102,28 @@ exports.searchUsers = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.searchUserByName = async (req, res) => {
+  const { name } = req.params;
+
+  console.log("query", name, req.params.name);
+  try {
+    const users = await prisma.user.findMany();
+
+    const searchResults = users.filter((user) => {
+      console.log("user", user);
+      if (
+        user.name.toString().toLowerCase().includes(name.toLowerCase()) ||
+        user.city.toString().toLowerCase().includes(name.toLowerCase()) ||
+        user.address?.toString().toLowerCase().includes(name.toLowerCase()) ||
+        user.phoneNumber?.toString().toLowerCase().includes(name.toLowerCase())
+      ) {
+        return user;
+      }
+    });
+    console.log("users", searchResults);
+    res.status(200).json(searchResults);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
