@@ -67,7 +67,7 @@ const sendOrderEmail = (order) => {
 
   const mailOptions = {
     from: '"Mahakali Sarees" <noreply@mahakalisarees.com>',
-    to: "anirudhjoshi485@gmail.com",
+    to: "notification@mahakalisarees.com",
     subject: subject,
     html:
       "<div> <h2>Order Confirmation</h2> <h3>Order Summary</h3> <table> <tr > <th>Product</th> <th>Number of bales</th> <th>Price</th> </tr> " +
@@ -160,5 +160,17 @@ exports.getOrders = async (req, res) => {
     });
   } catch (error) {
     console.log("error", error);
+  }
+};
+
+exports.deleteOrder = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await prisma.order.delete({
+      where: { id },
+    });
+    res.status(204).end();
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

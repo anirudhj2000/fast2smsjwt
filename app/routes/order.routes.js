@@ -12,4 +12,6 @@ module.exports = function (app) {
 
   app.post("/api/orders", orderController.createOrder);
   app.get("/api/orders", orderController.getOrders);
+
+  app.delete("/api/orders/:id", orderController.deleteOrder);
 };
