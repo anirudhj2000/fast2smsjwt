@@ -14,16 +14,17 @@ datasource db {
 }
 
 model User {
-  id          String    @id @unique @default(uuid())
-  name        String
-  phoneNumber String    @unique
-  city        String
-  address     String?
-  state       String?
-  createdAt   DateTime?
-  admin       Boolean?  @default(false)
-  verified    Boolean?  @default(false)
-  email       String?
+  id           String    @id @unique @default(uuid())
+  name         String
+  phoneNumber  String    @unique
+  city         String
+  address      String?
+  state        String?
+  organisation String?
+  createdAt    DateTime?
+  admin        Boolean?  @default(false)
+  verified     Boolean?  @default(false)
+  email        String?
 }
 
 model Product {

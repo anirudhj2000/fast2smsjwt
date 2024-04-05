@@ -49,6 +49,7 @@ exports.signup = (req, res) => {
     phoneNumber: req.body.phoneNumber,
     city: req.body.city,
     email: req.body.email,
+    organisation: req.body.organisation,
   };
 
   let encryptedString = encryptPhoneNumber(req.body.phoneNumber)
@@ -318,7 +319,8 @@ const verifyUserByMail = (verficaitionURL, user) => {
   console.log("verficaitionURL", verficaitionURL, user);
   const mailOptions = {
     from: '"Mahakali Sarees" <noreply@mahakalisarees.com>',
-    to: "verify@mahakalisarees.com",
+    // to: "verify@mahakalisarees.com",
+    to: "anirudhjoshi485@gmail.com",
     subject: subject,
     html:
       "<div> <h2>Account Verification</h2> <p>Dear User,</p> <p>" +
