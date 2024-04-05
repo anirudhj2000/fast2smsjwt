@@ -318,7 +318,7 @@ const verifyUserByMail = (verficaitionURL, user) => {
   console.log("verficaitionURL", verficaitionURL, user);
   const mailOptions = {
     from: '"Mahakali Sarees" <noreply@mahakalisarees.com>',
-    to: "notification@mahakalisarees.com",
+    to: "verify@mahakalisarees.com",
     subject: subject,
     html:
       "<div> <h2>Account Verification</h2> <p>Dear User,</p> <p>" +

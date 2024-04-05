@@ -67,7 +67,7 @@ const sendOrderEmail = (order) => {
 
   const mailOptions = {
     from: '"Mahakali Sarees" <noreply@mahakalisarees.com>',
-    to: "notification@mahakalisarees.com",
+    to: "orders@mahakalisarees.com",
     subject: subject,
     html:
       "<div> <h2>Order Confirmation</h2> <h3>Order Summary</h3> <table> <tr > <th>Product</th> <th>Number of bales</th> <th>Price</th> </tr> " +
