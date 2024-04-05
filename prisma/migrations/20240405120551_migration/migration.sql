@@ -6,6 +6,7 @@ CREATE TABLE "User" (
     "city" TEXT NOT NULL,
     "address" TEXT,
     "state" TEXT,
+    "organisation" TEXT,
     "createdAt" TIMESTAMP(3),
     "admin" BOOLEAN DEFAULT false,
     "verified" BOOLEAN DEFAULT false,
