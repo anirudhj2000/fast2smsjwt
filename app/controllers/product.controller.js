@@ -28,7 +28,7 @@ exports.searchProducts = async (req, res) => {
     }
 
     // Range-based filters
-    if (minPrice && maxPrice) {
+    if (minPrice >= 0 && maxPrice) {
       whereClause.price = {
         gte: parseFloat(minPrice),
         lte: parseFloat(maxPrice),
@@ -48,7 +48,9 @@ exports.searchProducts = async (req, res) => {
     // Pagination
     const skip = (page - 1) * limit;
 
+    console.log("whereClause", whereClause);
     // Fetch products with pagination and filters
+
     const products = await prisma.product.findMany({
       where: whereClause,
       skip: skip,
