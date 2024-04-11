@@ -48,7 +48,6 @@ exports.searchProducts = async (req, res) => {
     // Pagination
     const skip = (page - 1) * limit;
 
-    console.log("whereClause", whereClause);
     // Fetch products with pagination and filters
 
     const products = await prisma.product.findMany({
