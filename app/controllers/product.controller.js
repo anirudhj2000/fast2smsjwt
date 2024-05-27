@@ -1,7 +1,15 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const path = require("path");
 const fs = require("fs");
+const AWS = require("aws-sdk");
+
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET,
+  region: process.env.AWS_REGION,
+});
+
+const s3 = new AWS.S3();
 
 exports.searchProducts = async (req, res) => {
   console.log("req body", req.body);
@@ -80,6 +88,7 @@ exports.searchProducts = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 exports.createProduct = async (req, res) => {
   let obj = {
     skuId: req.body.skuId,
@@ -96,6 +105,7 @@ exports.createProduct = async (req, res) => {
     blouse: req.body.blouse,
     newProduct: req.body.newProduct || false,
   };
+
   try {
     const newProduct = await prisma.product.create({
       data: obj,
@@ -149,28 +159,73 @@ exports.getProductById = async (req, res) => {
 };
 
 exports.imageUpload = async (req, res) => {
-  const fileUrls = req.files.map((file) => {
-    console.log("product controller -- file", file);
-    return `${file.filename}`;
-  });
+  const fileUrls = [];
+
+  console.log("req.files", req.files);
+  for (const file of req.files) {
+    let buffer = fs.readFileSync(file.path);
+    console.log("file", buffer);
+    const params = {
+      Bucket: "theinfinitysolutions",
+      Key: "mahakalisarees/static/" + file.filename,
+      Body: buffer,
+    };
+
+    console.log("params", params);
+    try {
+      const uploadedFile = await s3.upload(params).promise();
+      console.log("uploadedFile", uploadedFile);
+      fileUrls.push(file.filename);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      return res.status(500).send("Error uploading file");
+    }
+  }
   let obj = {
     images: fileUrls,
   };
+
+  console.log("fileUrls", fileUrls);
 
   res.status(200).send(obj);
 };
 
 exports.deleteImage = async (req, res) => {
   const imageName = req.params.imageName;
-  const imagePath = path.join(__dirname, "../../", "images", imageName);
+  const params = {
+    Bucket: "theinfinitysolutions",
+    Key: "/mahakalisarees/static/" + imageName,
+  };
 
-  console.log("img path", imagePath);
+  console.log("params", params);
 
-  fs.unlink(imagePath, (err) => {
-    if (err) {
-      console.error("Error deleting image:", err);
-      return res.status(500).send("Error deleting image");
-    }
-    res.send("Image deleted successfully");
-  });
+  try {
+    s3.deleteObject(params)
+      .promise()
+      .then((data) => {
+        console.log("res.data", data);
+        res.status(204).end();
+      })
+      .catch((err) => {
+        console.error("Error deleting image:", err);
+        return res.status(500).send("Error deleting image");
+      });
+  } catch (error) {
+    console.error("Error deleting image:", error);
+    return res.status(500).send("Error deleting image");
+  }
 };
+// exports.deleteImage = async (req, res) => {
+//   const imageName = req.params.imageName;
+//   const imagePath = path.join(__dirname, "../../", "images", imageName);
+
+//   console.log("img path", imagePath);
+
+//   fs.unlink(imagePath, (err) => {
+//     if (err) {
+//       console.error("Error deleting image:", err);
+//       return res.status(500).send("Error deleting image");
+//     }
+//     res.send("Image deleted successfully");
+//   });
+// };
